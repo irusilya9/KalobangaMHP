@@ -18,11 +18,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Build APK manually
         run: |
+          # Указываем путь к предустановленному Android SDK
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+          
           mkdir -p app/build/classes
           javac -d app/build/classes -classpath "$ANDROID_HOME/platforms/android-34/android.jar" app/src/main/java/com/kalobanga/mhp/MainActivity.java
           
@@ -36,7 +37,14 @@ jobs:
           
           keytool -genkey -v -keystore my.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 10000 -storepass password -keypass password -dname "CN=Android, OU=Android, O=Android, L=Android, ST=Android, C=US"
           
-          apksigner sign --ks my.keystore --ks-pass pass:password --key-pass pass:password --out app-debug.apk app-unsigned.apk
+          # В новых версиях build-tools apksigner лежит в отдельной папке
+          if [ -f "$ANDROID_HOME/build-tools/34.0.0/apksigner" ]; then
+            APKSIGNER="$ANDROID_HOME/build-tools/34.0.0/apksigner"
+          else
+            APKSIGNER="apksigner"
+          fi
+          
+          $APKSIGNER sign --ks my.keystore --ks-pass pass:password --key-pass pass:password --out app-debug.apk app-unsigned.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
