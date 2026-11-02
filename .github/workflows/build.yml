@@ -21,14 +21,25 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build APK
+      - name: Build APK manually
         run: |
-          echo "sdk.dir=$ANDROID_HOME" > local.properties
-          gradle wrapper --gradle-version 8.2
-          ./gradlew assembleDebug
+          mkdir -p app/build/classes
+          javac -d app/build/classes -classpath "$ANDROID_HOME/platforms/android-34/android.jar" app/src/main/java/com/kalobanga/mhp/MainActivity.java
+          
+          d8 --lib "$ANDROID_HOME/platforms/android-34/android.jar" --output app/build/ app/build/classes/com/kalobanga/mhp/MainActivity.class
+          
+          aapt2 link -o app/build/app-unsigned.apk -I "$ANDROID_HOME/platforms/android-34/android.jar" --manifest app/src/main/AndroidManifest.xml -A app/src/main/assets
+          
+          cd app/build
+          
+          zip -uj app-unsigned.apk classes.dex
+          
+          keytool -genkey -v -keystore my.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 10000 -storepass password -keypass password -dname "CN=Android, OU=Android, O=Android, L=Android, ST=Android, C=US"
+          
+          apksigner sign --ks my.keystore --ks-pass pass:password --key-pass pass:password --out app-debug.apk app-unsigned.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: KalobangaMHP-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: app/build/app-debug.apk
