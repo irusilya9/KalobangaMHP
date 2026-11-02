@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KalobangaMHP</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="splash">
+  <div class="kolobok">
+    <div class="mask"></div>
+    <div class="eye left"></div>
+    <div class="eye right"></div>
+  </div>
+  <div class="splash-title">KalobangaMHP</div>
+  <div class="splash-sub">initializing core...</div>
+  <div class="splash-bar"><div class="splash-fill"></div></div>
+</div>
+
+<div id="main" class="hidden">
+  <header>
+    <div class="logo-small">
+      <div class="kolo-mini"></div>
+      <span>KalobangaMHP</span>
+    </div>
+    <div class="status">● ONLINE</div>
+  </header>
+  <div id="catalog"></div>
+</div>
+
+<div id="runner" class="hidden">
+  <div class="runner-head">
+    <span id="runner-title"></span>
+    <button id="closeRunner">✕</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div id="progressFill"></div></div>
+    <div id="progressPct">0%</div>
+  </div>
+  <div id="console"></div>
+  <div id="result" class="hidden"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
